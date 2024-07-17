@@ -1,13 +1,17 @@
 import { Button, Card } from "@mui/material";
 import React, { useState } from "react";
 import FormInput from "../../components/FormInput";
-export default function Container_v3() {
+import axios from "axios";
+
+export default function ContainerVersion3() {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("남자");
   const [health, setHealth] = useState("주 1회");
 
   const [healthStatus, setHealthStatus] = useState("");
 
+  const [response, setResponse] = useState("");
+  
   const ageHandleChange = (e) => {
     setAge(e.target.value);
   };
@@ -51,20 +55,43 @@ export default function Container_v3() {
       label: "운동",
       inputType: "select",
       options: healthArr,
-      value: healthStatus,
-      onChange: healthStatusHandleChange,
+      value: health,
+      onChange: healthHandleChange,
     },
     {
       label: "기타",
       inputType: "multiline",
       placeholder: "건강 상태를 입력해주세요.",
-      value: health,
-      onChange: healthHandleChange,
+      value: healthStatus,
+      onChange: healthStatusHandleChange,
     },
   ];
 
   const handleButtonClick = () => {
-    
+    axios
+      .post(
+        //"https://cors-anywhere.herokuapp.com/https://api.kakaobrain.com/v1/inference/kogpt/generation",
+        "https://cors.bridged.cc/https://api.kakaobrain.com/v1/inference/kogpt/generation",
+        {
+          prompt: `나이는 ${age}, 성별은 ${gender}, 운동은 ${health}, 가타 건강상태는 ${healthStatus}정도인테 영양제 추천해줘`,
+          max_tokens: 120,
+          temperature: 0.2,
+        },
+        {
+          headers: {
+            Authorization: "KakaoAK 788bc3d8a92c9d8234a6404d1c070ba4",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      )
+      .then((response) => {    // 응답을 받음
+        console.log(response);
+        //setResponse(response.generations[0].text);    // 응답의 text값 추출
+        setResponse(response.data.generations[0].text);    // 응답의 text값 추출
+        setResponse(!"오늘도 날씨가 좋네요 좋은 하루 보내세요");
+      })
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -95,8 +122,8 @@ export default function Container_v3() {
             </Button>
           </div>
         </div>
-        <div></div>
       </Card>
+     {response}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { Button, Card } from "@mui/material";
 import React, { useState } from "react";
 import FormInput from "../../components/FormInput";
+
+
 export default function Container_v2() {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("남자");
